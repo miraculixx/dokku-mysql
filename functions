@@ -52,6 +52,10 @@ service_create_container() {
   docker run --rm --link "$SERVICE_NAME:$PLUGIN_COMMAND_PREFIX" dokkupaas/wait:0.2 -p "$PLUGIN_DATASTORE_WAIT_PORT" > /dev/null
 
   dokku_log_info2 "$PLUGIN_SERVICE container created: $SERVICE"
+  # change database encoding
+  docker exec $ID bash -c "mysql -u root -p$ROOTPASSWORD -e 'ALTER DATABASE \`$SERVICE\` CHARACTER SET utf8 COLLATE utf8_unicode_ci;'"
+  # http://dev.mysql.com/doc/refman/5.6/en/mysql-tzinfo-to-sql.html
+  docker exec $ID bash -c "mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u root -p$rootpassword mysql" 
   service_info "$SERVICE"
 }
 
