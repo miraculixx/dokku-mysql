@@ -54,6 +54,8 @@ case "$1" in
     docker run --rm --link "$SERVICE_NAME:$PLUGIN_COMMAND_PREFIX" dokkupaas/wait > /dev/null
 
     dokku_log_info2 "$PLUGIN_SERVICE container created: $SERVICE"
+    # change database encoding
+    docker exec $ID bash -c "mysql -u root -p$rootpassword -e 'ALTER DATABASE \`$SERVICE\` CHARACTER SET utf8 COLLATE utf8_unicode_ci;'"
     dokku "$PLUGIN_COMMAND_PREFIX:info" "$SERVICE"
     ;;
 
