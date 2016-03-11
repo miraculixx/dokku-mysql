@@ -10,7 +10,7 @@ if ! docker images | grep -e "^svendowideit/ambassador "; then
   docker pull svendowideit/ambassador:latest
 fi
 
-if ! docker images | grep -e "^dokkupaas/wait "; then
+if ! docker images | grep -e "^gaumire/wait "; then
   docker pull dokkupaas/wait:latest
 fi
 
