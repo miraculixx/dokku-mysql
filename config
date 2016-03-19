@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-export MYSQL_IMAGE=${MYSQL_IMAGE:="gaumire/mysql5.5"}
+export MYSQL_IMAGE=${MYSQL_IMAGE:="shrebo/mysql5.5"}
 export MYSQL_IMAGE_VERSION=${MYSQL_IMAGE_VERSION:="latest"}
 export MYSQL_ROOT=${MYSQL_ROOT:="/var/lib/dokku/services/mysql"}
 
