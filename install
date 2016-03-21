@@ -10,8 +10,8 @@ if ! docker images | grep -e "^svendowideit/ambassador "; then
   docker pull svendowideit/ambassador:latest
 fi
 
-if ! docker images | grep -e "^gaumire/wait "; then
-  docker pull dokkupaas/wait:latest
+if ! docker images | grep -e "^shrebo/wait "; then
+  docker pull shrebo/wait:latest
 fi
 
 mkdir -p "$PLUGIN_DATA_ROOT" || echo "Failed to create $PLUGIN_SERVICE directory"

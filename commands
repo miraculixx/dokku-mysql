@@ -51,11 +51,14 @@ case "$1" in
     echo "$ID" > "$SERVICE_ROOT/ID"
 
     dokku_log_verbose_quiet "Waiting for container to be ready"
-    docker run --rm --link "$SERVICE_NAME:$PLUGIN_COMMAND_PREFIX" gaumire/wait > /dev/null
+    docker run --rm --link "$SERVICE_NAME:$PLUGIN_COMMAND_PREFIX" shrebo/wait > /dev/null
 
     dokku_log_info2 "$PLUGIN_SERVICE container created: $SERVICE"
     # change database encoding
     docker exec $ID bash -c "mysql -u root -p$rootpassword -e 'ALTER DATABASE \`$SERVICE\` CHARACTER SET utf8 COLLATE utf8_unicode_ci;'"
+
+    # http://dev.mysql.com/doc/refman/5.6/en/mysql-tzinfo-to-sql.html
+    docker exec $ID bash -c "mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u root -p$rootpassword mysql" 
 
     dokku "$PLUGIN_COMMAND_PREFIX:info" "$SERVICE"
     ;;
