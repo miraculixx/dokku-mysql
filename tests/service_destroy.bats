@@ -20,7 +20,7 @@ load test_helper
 @test "($PLUGIN_COMMAND_PREFIX:destroy) error when container is linked to an app" {
   dokku "$PLUGIN_COMMAND_PREFIX:create" l
   dokku apps:create app
-  dokku "$PLUGIN_COMMAND_PREFIX:link" l app
+  dokku "$PLUGIN_COMMAND_PREFIX:link" l app l
   run dokku "$PLUGIN_COMMAND_PREFIX:destroy" l
   assert_contains "${lines[*]}" "Cannot delete linked service"
   rm "$DOKKU_ROOT/app" -rf

@@ -22,49 +22,51 @@ teardown() {
 }
 
 @test "($PLUGIN_COMMAND_PREFIX:link) error when the app does not exist" {
-  run dokku "$PLUGIN_COMMAND_PREFIX:link" l not_existing_app
+  run dokku "$PLUGIN_COMMAND_PREFIX:link" l not_existing_app l
   assert_contains "${lines[*]}" "App not_existing_app does not exist"
 }
 
 @test "($PLUGIN_COMMAND_PREFIX:link) error when the service does not exist" {
-  run dokku "$PLUGIN_COMMAND_PREFIX:link" not_existing_service my_app
+  run dokku "$PLUGIN_COMMAND_PREFIX:link" not_existing_service my_app not_existing_service
   assert_contains "${lines[*]}" "service not_existing_service does not exist"
 }
 
 @test "($PLUGIN_COMMAND_PREFIX:link) error when the service is already linked to app" {
-  dokku "$PLUGIN_COMMAND_PREFIX:link" l my_app
-  run dokku "$PLUGIN_COMMAND_PREFIX:link" l my_app
+  dokku "$PLUGIN_COMMAND_PREFIX:link" l my_app l 
+  run dokku "$PLUGIN_COMMAND_PREFIX:link" l my_app l
   assert_contains "${lines[*]}" "Already linked as DATABASE_URL"
 }
 
 @test "($PLUGIN_COMMAND_PREFIX:link) exports DATABASE_URL to app" {
-  dokku "$PLUGIN_COMMAND_PREFIX:link" l my_app
+  dokku "$PLUGIN_COMMAND_PREFIX:link" l my_app l
   url=$(dokku config:get my_app DATABASE_URL)
-  password="$(cat "$PLUGIN_DATA_ROOT/l/PASSWORD")"
-  assert_contains "$url" "mysql://mysql:$password@dokku-mysql-l:3306/l"
-  dokku "$PLUGIN_COMMAND_PREFIX:unlink" l my_app
+  local password="$(cat "$PLUGIN_DATA_ROOT/l/dbs/l/PASSWORD")"
+  local user="$(cat "$PLUGIN_DATA_ROOT/l/dbs/l/USER")"
+  assert_contains "$url" "mysql://$user:$password@dokku-mysql-l:3306/l"
+  dokku "$PLUGIN_COMMAND_PREFIX:unlink" l my_app l
 }
 
 @test "($PLUGIN_COMMAND_PREFIX:link) generates an alternate config url when DATABASE_URL already in use" {
   dokku config:set my_app DATABASE_URL=mysql://user:pass@host:3306/db
-  dokku "$PLUGIN_COMMAND_PREFIX:link" l my_app
+  dokku "$PLUGIN_COMMAND_PREFIX:link" l my_app l
   run dokku config my_app
   assert_contains "${lines[*]}" "DOKKU_MYSQL_"
-  dokku "$PLUGIN_COMMAND_PREFIX:unlink" l my_app
+  dokku "$PLUGIN_COMMAND_PREFIX:unlink" l my_app l
 }
 
 @test "($PLUGIN_COMMAND_PREFIX:link) links to app with docker-options" {
-  dokku "$PLUGIN_COMMAND_PREFIX:link" l my_app
+  dokku "$PLUGIN_COMMAND_PREFIX:link" l my_app l
   run dokku docker-options my_app
   assert_contains "${lines[*]}" "--link dokku.mysql.l:dokku-mysql-l"
-  dokku "$PLUGIN_COMMAND_PREFIX:unlink" l my_app
+  dokku "$PLUGIN_COMMAND_PREFIX:unlink" l my_app l
 }
 
 @test "($PLUGIN_COMMAND_PREFIX:link) uses apps MYSQL_DATABASE_SCHEME variable" {
   dokku config:set my_app MYSQL_DATABASE_SCHEME=mysql2
-  dokku "$PLUGIN_COMMAND_PREFIX:link" l my_app
+  dokku "$PLUGIN_COMMAND_PREFIX:link" l my_app l
   url=$(dokku config:get my_app DATABASE_URL)
-  password="$(cat "$PLUGIN_DATA_ROOT/l/PASSWORD")"
-  assert_contains "$url" "mysql2://mysql:$password@dokku-mysql-l:3306/l"
-  dokku "$PLUGIN_COMMAND_PREFIX:unlink" l my_app
+  local password="$(cat "$PLUGIN_DATA_ROOT/l/dbs/l/PASSWORD")"
+  local user="$(cat "$PLUGIN_DATA_ROOT/l/dbs/l/USER")"
+  assert_contains "$url" "mysql2://$user:$password@dokku-mysql-l:3306/l"
+  dokku "$PLUGIN_COMMAND_PREFIX:unlink" l my_app l
 }
