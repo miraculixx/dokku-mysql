@@ -8,10 +8,12 @@ mysql-export-cmd() {
   declare desc="export a dump of the $PLUGIN_SERVICE service database"
   local cmd="$PLUGIN_COMMAND_PREFIX:export" argv=("$@"); [[ ${argv[0]} == "$cmd" ]] && shift 1
   declare SERVICE="$1"
+  declare DATABASE="$2"
 
   [[ -z "$SERVICE" ]] && dokku_log_fail "Please specify a name for the service"
+  [[ -z "$DATABASE" ]] && dokku_log_fail "Please specify a database name"
   verify_service_name "$SERVICE"
-  service_export "$SERVICE"
+  service_export "$SERVICE" "$DATABASE"
 }
 
 mysql-export-cmd "$@"

@@ -10,21 +10,22 @@ teardown() {
 }
 
 @test "($PLUGIN_COMMAND_PREFIX:list) with no exposed ports, no linked apps" {
+  sleep 10
   run dokku "$PLUGIN_COMMAND_PREFIX:list"
-  assert_contains "${lines[*]}" "l     mysql:5.7.12  running  -              -"
+  assert_contains "${lines[*]}" "l     shrebo/mysql5.5:latest  running  -              -"
 }
 
 @test "($PLUGIN_COMMAND_PREFIX:list) with exposed ports" {
   dokku "$PLUGIN_COMMAND_PREFIX:expose" l 4242
   run dokku "$PLUGIN_COMMAND_PREFIX:list"
-  assert_contains "${lines[*]}" "l     mysql:5.7.12  running  3306->4242     -"
+  assert_contains "${lines[*]}" "l     shrebo/mysql5.5:latest  running  3306->4242     -"
 }
 
 @test "($PLUGIN_COMMAND_PREFIX:list) with linked app" {
   dokku apps:create my_app
-  dokku "$PLUGIN_COMMAND_PREFIX:link" l my_app
+  dokku "$PLUGIN_COMMAND_PREFIX:link" l my_app l
   run dokku "$PLUGIN_COMMAND_PREFIX:list"
-  assert_contains "${lines[*]}" "l     mysql:5.7.12  running  -              my_app"
+  assert_contains "${lines[*]}" "l     shrebo/mysql5.5:latest  running  -              my_app"
   dokku --force apps:destroy my_app
 }
 

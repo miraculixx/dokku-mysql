@@ -21,24 +21,29 @@ teardown() {
   assert_contains "${lines[*]}" "Please specify an app to run the command on"
 }
 
+@test "($PLUGIN_COMMAND_PREFIX:unlink) error when the database argument is missing" {
+  run dokku "$PLUGIN_COMMAND_PREFIX:unlink" l my_app
+  assert_contains "${lines[*]}" "Please specify a database name on service"
+}
+
 @test "($PLUGIN_COMMAND_PREFIX:unlink) error when the app does not exist" {
-  run dokku "$PLUGIN_COMMAND_PREFIX:unlink" l not_existing_app
+  run dokku "$PLUGIN_COMMAND_PREFIX:unlink" l not_existing_app l
   assert_contains "${lines[*]}" "App not_existing_app does not exist"
 }
 
 @test "($PLUGIN_COMMAND_PREFIX:unlink) error when the service does not exist" {
-  run dokku "$PLUGIN_COMMAND_PREFIX:unlink" not_existing_service my_app
+  run dokku "$PLUGIN_COMMAND_PREFIX:unlink" not_existing_service my_app not_existing_service
   assert_contains "${lines[*]}" "service not_existing_service does not exist"
 }
 
 @test "($PLUGIN_COMMAND_PREFIX:unlink) error when service not linked to app" {
-  run dokku "$PLUGIN_COMMAND_PREFIX:unlink" l my_app
+  run dokku "$PLUGIN_COMMAND_PREFIX:unlink" l my_app l
   assert_contains "${lines[*]}" "Not linked to app my_app"
 }
 
 @test "($PLUGIN_COMMAND_PREFIX:unlink) removes link from docker-options" {
-  dokku "$PLUGIN_COMMAND_PREFIX:link" l my_app >&2
-  dokku "$PLUGIN_COMMAND_PREFIX:unlink" l my_app
+  dokku "$PLUGIN_COMMAND_PREFIX:link" l my_app l >&2
+  dokku "$PLUGIN_COMMAND_PREFIX:unlink" l my_app l
   options=$(dokku docker-options my_app | xargs)
   check_value=""
   [[ "$(dokku version)" == "master" ]] && check_value="Deploy options: --restart=on-failure:10"
@@ -47,8 +52,8 @@ teardown() {
 }
 
 @test "($PLUGIN_COMMAND_PREFIX:unlink) unsets config url from app" {
-  dokku "$PLUGIN_COMMAND_PREFIX:link" l my_app >&2
-  dokku "$PLUGIN_COMMAND_PREFIX:unlink" l my_app
+  dokku "$PLUGIN_COMMAND_PREFIX:link" l my_app l >&2
+  dokku "$PLUGIN_COMMAND_PREFIX:unlink" l my_app l
   config=$(dokku config:get my_app DATABASE_URL)
   assert_equal "$config" ""
 }

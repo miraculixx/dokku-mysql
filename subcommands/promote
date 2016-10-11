@@ -5,16 +5,19 @@ source "$PLUGIN_BASE_PATH/common/functions"
 source "$(dirname "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)")/functions"
 
 mysql-promote-cmd() {
-  declare desc="promote service <name> as ${PLUGIN_DEFAULT_ALIAS}_URL in <app>"
+  declare desc="promote <db> on service <name> as ${PLUGIN_DEFAULT_ALIAS}_URL in <app>"
   local cmd="$PLUGIN_COMMAND_PREFIX:promote" argv=("$@"); [[ ${argv[0]} == "$cmd" ]] && shift 1
-  declare SERVICE="$1" APP="$2"
+  declare SERVICE="$1"
+  declare APP="$2"
+  declare DATABASE="$3"
   APP=${APP:="$DOKKU_APP_NAME"}
 
   [[ -z "$SERVICE" ]] && dokku_log_fail "Please specify a name for the service"
   [[ -z "$APP" ]] && dokku_log_fail "Please specify an app to run the command on"
+  [[ -z "$DATABASE" ]] && dokku_log_fail "Please specify a database name on service"
   verify_service_name "$SERVICE"
   verify_app_name "$APP"
-  service_promote "$SERVICE" "$APP"
+  service_promote "$SERVICE" "$APP" "$DATABASE"
 }
 
 mysql-promote-cmd "$@"
