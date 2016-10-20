@@ -11,7 +11,7 @@ source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/functions"
 
 APP="$1"
 for SERVICE in "$PLUGIN_DATA_ROOT"/*; do
-    local DATABASES="$(ls -lAh $PLUGIN_DATA_ROOT/$SERVICE/dbs/ | grep '^d' | awk '{print $9}')"
+    DATABASES="$(ls -lAh $SERVICE/dbs/ | grep '^d' | awk '{print $9}')"
     for DB in $DATABASES; do
         remove_from_links_file "$(basename "$SERVICE")" "$APP" "$DB"
     done

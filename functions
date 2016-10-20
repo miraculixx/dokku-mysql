@@ -109,7 +109,7 @@ service_extend_db() {
 
   # create database and grant permissions
   docker exec "$SERVICE_NAME" mysql -u root -p"$ROOTPASSWORD" -e "CREATE DATABASE \`$DATABASE\` CHARACTER SET utf8 COLLATE utf8_unicode_ci;"
-  docker exec "$SERVICE_NAME" mysql -u root -p"$ROOTPASSWORD" -e "GRANT ALL ON ${DATABASE}.* to $MYSQL_USER identified by '$PASSWORD';"
+  docker exec "$SERVICE_NAME" mysql -u root -p"$ROOTPASSWORD" -e "GRANT ALL ON \`$DATABASE\`.* to $MYSQL_USER identified by '$PASSWORD';"
 
   service_info "$SERVICE"
 }
